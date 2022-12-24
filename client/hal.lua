@@ -393,18 +393,19 @@ end
 
 local socket  = require("socket.core")
 
+function send(message)
+  tcp:send(json.encode(message) .. "\n")
+end
+
 function main(host, port)
   tcp = assert(socket.tcp())
   tcp:connect(host, port)
   tcp:settimeout(10)
 
-  tcp:send('hello')
-
+  send({ op="connect", data={"ping"} })
   message = tcp:receive()
-  print(message)
 
-  tcp:send('get')
-  tcp:receive()
+  print(message)
 end
 
 main("127.0.0.1", 7070)

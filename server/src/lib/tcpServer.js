@@ -32,11 +32,18 @@ class TCPServer extends EventEmitter {
       sock.on('data', (data) => {
         log.debug(`TCP DATA ${sock.remoteAddress}: ${data}`);
         this.#sockets.forEach((socket) => {
-          const packet = Buffer.alloc(1024, 1);
+          log.info('data incoming');
+          log.debug(data);
+          log.debug(JSON.parse(data.toString()));
 
-          // sock.write(`TCP ${socket.remoteAddress}:${socket.remotePort} said ${data}\n`);
-          // sock.write('10');
-          sock.write(packet);
+          const db = JSON.parse(data.toString());
+          log.debug('op', db.op);
+          log.debug('data', db.data);
+
+          const message = JSON.stringify({ op: 'connect', data: ['pong'] });
+          sock.write(`${message}\n`);
+
+          // sock.write('12345678\n');
         });
         this.emit('data', data);
       });

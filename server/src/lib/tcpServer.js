@@ -41,11 +41,9 @@ class TCPServer extends EventEmitter {
           log.debug('data', db.data);
 
           const message = JSON.stringify({ op: 'connect', data: ['pong'] });
-          sock.write(`${message}\n`);
-
-          // sock.write('12345678\n');
+          // sock.write(`${message}\n`);
         });
-        this.emit('data', data);
+        this.emit('data', sock, data);
       });
 
       sock.on('close', () => {

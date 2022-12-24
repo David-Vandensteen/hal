@@ -397,15 +397,63 @@ function send(message)
   tcp:send(json.encode(message) .. "\n")
 end
 
+function opHandle(message)
+  print("execute operation : "..message.id)
+  if message.op == "print" then
+    print(message.data[1])
+  end
+  if message.op == "joypad.write" then
+    joypad.write(message.data[1], message.data[2])
+  end
+  if message.op == "emu.poweron" then
+    emu.poweron()
+  end
+  if message.op == "emu.speedmode" then
+    emu.speedmode(message.data[1])
+  end
+  if message.op == "emu.frameadvance" then
+    emu.frameadvance()
+  end
+  if message.op == "rom.readbyte" then
+    local value = rom.readbyte(message.data[1])
+    --tcp:send(json.encode({ cmd="romReadByte", params= { operation.params[1] }, data=value }))
+    --tcp:receive()
+  end
+  if message.op == "memory.readbyte" then
+    local value = memory.readbyte(message.data[1])
+    --tcp:send(json.encode({ cmd="memoryReadByte", params={ operation.params[1] }, data=value }))
+    --tcp:receive()
+  end
+end
+
 function main(host, port)
   tcp = assert(socket.tcp())
   tcp:connect(host, port)
   tcp:settimeout(10)
 
-  send({ op="connect", data={"ping"} })
-  message = tcp:receive()
+  --send({ op="connect", data={"ping"} })
+  --message = tcp:receive()
+  --print(message)
 
-  print(message)
+  send({ op="getOp" })
+  message = tcp:receive()
+  opHandle(json.decode(message))
+
+  send({ op="getOp" })
+  message = tcp:receive()
+  opHandle(json.decode(message))
+
+  send({ op="getOp" })
+  message = tcp:receive()
+  opHandle(json.decode(message))
+
+  send({ op="getOp" })
+  message = tcp:receive()
+  opHandle(json.decode(message))
+
+  send({ op="getOp" })
+  message = tcp:receive()
+  opHandle(json.decode(message))
 end
 
 main("127.0.0.1", 7070)

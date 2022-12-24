@@ -20,11 +20,16 @@ class Protocol {
   static print(message) {
     return { op: 'print', data: [message], id: idNext() };
   }
+
+  static joypadWrite(deviceId, options) {
+    return { op: 'joypad.write', data: [deviceId, options], id: idNext() };
+  }
 }
 
 const {
   emuPowerOn,
   emuSpeedMode,
+  joypadWrite,
   print,
 } = Protocol;
 
@@ -33,6 +38,7 @@ export {
   Protocol,
   emuPowerOn,
   emuSpeedMode,
+  joypadWrite,
   print,
   halDecode,
   halEncode,

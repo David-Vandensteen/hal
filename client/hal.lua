@@ -403,6 +403,7 @@ function opHandle(message)
     print(message.data[1])
   end
   if message.op == "joypad.write" then
+    print(message.data[2])
     joypad.write(message.data[1], message.data[2])
   end
   if message.op == "emu.poweron" then
@@ -431,28 +432,14 @@ function main(host, port)
   tcp:connect(host, port)
   tcp:settimeout(10)
 
+  --joypad.write(1, { B=true })
   --send({ op="connect", data={"ping"} })
   --message = tcp:receive()
   --print(message)
 
   send({ op="getOp" })
   message = tcp:receive()
-  opHandle(json.decode(message))
-
-  send({ op="getOp" })
-  message = tcp:receive()
-  opHandle(json.decode(message))
-
-  send({ op="getOp" })
-  message = tcp:receive()
-  opHandle(json.decode(message))
-
-  send({ op="getOp" })
-  message = tcp:receive()
-  opHandle(json.decode(message))
-
-  send({ op="getOp" })
-  message = tcp:receive()
+  print(json.decode(message))
   opHandle(json.decode(message))
 end
 

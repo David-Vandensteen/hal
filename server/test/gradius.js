@@ -20,6 +20,7 @@ const gradius = new Gradius({ server: { host: '127.0.0.1', port: 7070 } });
 
 gradius
   .init()
+  .gameMacro.joypad(1)
   .gameMacro.start()
   .gameMacro.custom()
   .gameMacro.init({ speed: 'normal' })

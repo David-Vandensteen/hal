@@ -8,7 +8,8 @@
     "start": "node src/index.js",
     "serve": "nodemon --watch src/ src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint src"
+    "lint": "eslint src test",
+    "test:gradius": "node test/gradius.js"
   },
   "author": "David Vandensteen <dvandensteen@gmail.com>",
   "license": "MIT",

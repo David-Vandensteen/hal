@@ -13,10 +13,27 @@ class Protocol {
     return { op: 'emu.poweron', id: idNext() };
   }
 
+  static emuSpeedMode(speed) {
+    return { op: 'emu.speedmode', data: [speed], id: idNext() };
+  }
+
   static print(message) {
     return { op: 'print', data: [message], id: idNext() };
   }
 }
 
+const {
+  emuPowerOn,
+  emuSpeedMode,
+  print,
+} = Protocol;
+
 export default Protocol;
-export { Protocol, halDecode, halEncode };
+export {
+  Protocol,
+  emuPowerOn,
+  emuSpeedMode,
+  print,
+  halDecode,
+  halEncode,
+};

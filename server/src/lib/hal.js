@@ -25,15 +25,6 @@ class Hal {
     this.gameMacro.init = ({ speed }) => {
       this.add(emuPowerOn());
       this.add(emuSpeedMode(speed));
-      this.add(print('OP1'));
-      this.add(print('OP2'));
-      this.add(print('OP3'));
-      this.add(print('OP4'));
-      this.add(print('OP5'));
-      this.add(print('OP6'));
-      this.add(print('OP7'));
-      this.add(print('OP8'));
-      this.add(print('OP9'));
       return this;
     };
     return this;
@@ -41,6 +32,22 @@ class Hal {
 
   add(operation) {
     this.#queue.unshift(operation);
+    return this;
+  }
+
+  addJoypad(
+    {
+      id,
+      B,
+      A,
+      right,
+      left,
+      down,
+      up,
+      start,
+      select,
+    },
+  ) {
     return this;
   }
 

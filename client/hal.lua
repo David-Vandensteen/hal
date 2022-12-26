@@ -397,13 +397,12 @@ function send(message)
   tcp:send(json.encode(message) .. "\n")
 end
 
-function opHandle(message)
+function handleOp(message)
   print("execute operation : "..message.id)
   if message.op == "print" then
     print(message.data[1])
   end
   if message.op == "joypad.write" then
-    print(message.data[2])
     joypad.write(message.data[1], message.data[2])
   end
   if message.op == "emu.poweron" then
@@ -414,6 +413,9 @@ function opHandle(message)
   end
   if message.op == "emu.frameadvance" then
     emu.frameadvance()
+  end
+  if message.op == "emu.pause" then
+    emu.pause()
   end
   if message.op == "rom.readbyte" then
     local value = rom.readbyte(message.data[1])
@@ -428,19 +430,24 @@ function opHandle(message)
 end
 
 function main(host, port)
+  id = 0
   tcp = assert(socket.tcp())
   tcp:connect(host, port)
   tcp:settimeout(10)
 
   --joypad.write(1, { B=true })
-  --send({ op="connect", data={"ping"} })
-  --message = tcp:receive()
-  --print(message)
 
-  send({ op="getOp" })
+  send({ op="connect", data={"ping"} })
   message = tcp:receive()
-  print(json.decode(message))
-  opHandle(json.decode(message))
+  print(message)
+
+  while true do
+    send({ op="getOp", id=id })
+    message = tcp:receive()
+    print(json.decode(message))
+    handleOp(json.decode(message))
+    id = id + 1
+  end
 end
 
 main("127.0.0.1", 7070)

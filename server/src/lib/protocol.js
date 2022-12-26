@@ -17,6 +17,10 @@ class Protocol {
     return { op: 'emu.speedmode', data: [speed], id: idNext() };
   }
 
+  static emuFrameAdvance() {
+    return { op: 'emu.frameadvance', id: idNext() };
+  }
+
   static print(message) {
     return { op: 'print', data: [message], id: idNext() };
   }
@@ -29,6 +33,7 @@ class Protocol {
 const {
   emuPowerOn,
   emuSpeedMode,
+  emuFrameAdvance,
   joypadWrite,
   print,
 } = Protocol;
@@ -38,6 +43,7 @@ export {
   Protocol,
   emuPowerOn,
   emuSpeedMode,
+  emuFrameAdvance,
   joypadWrite,
   print,
   halDecode,

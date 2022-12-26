@@ -5,6 +5,7 @@ import {
   Protocol,
   emuPowerOn,
   emuSpeedMode,
+  emuFrameAdvance,
   joypadWrite,
   print,
   halDecode,
@@ -28,8 +29,10 @@ class Hal {
       this.add(emuSpeedMode(speed));
       return this;
     };
-    this.gameMacro.joypad = (deviceId) => {
-      this.add(joypadWrite(deviceId, { A: false }));
+    this.gameMacro.wait = ({ frame }) => {
+      for (let i = 0; i < frame; i += 1) {
+        this.add(emuFrameAdvance());
+      }
       return this;
     };
     return this;

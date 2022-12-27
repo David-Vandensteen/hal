@@ -17,6 +17,7 @@ class Hal {
   #tcpServer;
   #queue = [];
   #periodic = [];
+  #timed = [];
   #frame = 0;
 
   constructor(config) {
@@ -28,26 +29,41 @@ class Hal {
     if (Array.isArray(operation)) {
       operation.map((op) => this.add(op));
     } else {
-      if (options) this.#periodic.push({ operation, ...options });
+      if (options?.period) this.#periodic.push({ operation, ...options });
+      if (options?.time) this.#timed.push({ operation, ...options });
       this.#queue.unshift({ ...operation, ...{ id: idNext() } });
     }
     return this;
   }
 
-  #next() {
-    // if (this.#queue.length === 0) this.add({ op: 'emu.pause', id: 1000 }); // TODO
-    return this.#queue.pop();
-  }
-
   #response(incomingMessage) {
+    log.debug(this.#timed);
+    if (this.#timed) {
+      this.#timed.map((t) => {
+        if (t.time > 0) this.add(t.operation);
+        return t;
+      });
+    }
     if (this.#periodic) {
       this.#periodic.map((p) => {
-        if ((this.#frame % p.period) === 0) this.add(p.operation);
+        if (((this.#frame % p.period) === 0) && p.operation.op !== 'emu.frameadvance') this.add(p.operation);
+        return p;
+      });
+      this.#periodic.map((p) => {
+        if (((this.#frame % p.period) === 0) && p.operation.op === 'emu.frameadvance') this.add(p.operation);
         return p;
       });
     }
     const sendMessage = this.#queue.find((q) => q.id === incomingMessage.id) || { op: 'emu.frameadvance', id: idNext() }; // TODO
-    if (sendMessage.op === 'emu.frameadvance') this.#frame += 1;
+    if (sendMessage.op === 'emu.frameadvance') {
+      this.#timed.map((t, index) => {
+      // eslint-disable-next-line no-param-reassign
+        t.time -= 1;
+        if (t.time <= 0) delete this.#timed[index];
+        return t;
+      });
+      this.#frame += 1;
+    }
     return sendMessage;
   }
 

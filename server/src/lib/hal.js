@@ -19,6 +19,28 @@ class Hal {
   #periodic = [];
   #timed = [];
   #frame = 0;
+  #joypadSate = {
+    1: {
+      A: false,
+      B: false,
+      up: false,
+      down: false,
+      left: false,
+      right: false,
+      start: false,
+      select: false,
+    },
+    2: {
+      A: false,
+      B: false,
+      up: false,
+      down: false,
+      left: false,
+      right: false,
+      start: false,
+      select: false,
+    },
+  };
 
   constructor(config) {
     this.#config = config;
@@ -36,8 +58,35 @@ class Hal {
     return this;
   }
 
+  joypad(options) {
+    const processOptions = this.#joypadSate;
+    for (let index = 1; index <= 2; index += 1) {
+      if (options[index]?.up) processOptions[index].up = options[index].up;
+      if (options[index]?.down) processOptions[index].down = options[index].down;
+      if (options[index]?.left) processOptions[index].left = options[index].left;
+      if (options[index]?.right) processOptions[index].right = options[index].right;
+      if (options[index]?.A) processOptions[index].A = options[index].A;
+      if (options[index]?.B) processOptions[index].B = options[index].B;
+      if (options[index]?.start) processOptions[index].start = options[index].start;
+      if (options[index]?.select) processOptions[index].select = options[index].select;
+
+      if (options[index]?.up === false) processOptions[index].up = false;
+      if (options[index]?.down === false) processOptions[index].down = false;
+      if (options[index]?.left === false) processOptions[index].left = false;
+      if (options[index]?.right === false) processOptions[index].right = false;
+      if (options[index]?.A === false) processOptions[index].A = false;
+      if (options[index]?.B === false) processOptions[index].B = false;
+      if (options[index]?.start === false) processOptions[index].start = false;
+      if (options[index]?.select === false) processOptions[index].select = false;
+    }
+    this.#joypadSate = processOptions;
+    log.debug(this.#getJoypad(1));
+    return this;
+  }
+
+  #getJoypad(deviceId) { return { op: 'joypad.write', data: [deviceId, this.#joypadSate[deviceId]] }; }
+
   #response(incomingMessage) {
-    log.debug(this.#timed);
     if (this.#timed) {
       this.#timed.map((t) => {
         if (t.time > 0) this.add(t.operation);
@@ -56,6 +105,8 @@ class Hal {
     }
     const sendMessage = this.#queue.find((q) => q.id === incomingMessage.id) || { op: 'emu.frameadvance', id: idNext() }; // TODO
     if (sendMessage.op === 'emu.frameadvance') {
+      this.add(this.#getJoypad(1));
+      log.debug(this.#joypadSate);
       this.#timed.map((t, index) => {
       // eslint-disable-next-line no-param-reassign
         t.time -= 1;
@@ -69,7 +120,6 @@ class Hal {
 
   start() {
     const { host, port } = this.#config.server;
-
     this.#tcpServer = new TCPServer({ host, port });
     this.#tcpServer.on('data', (socket, data) => {
       const message = halDecode(data);

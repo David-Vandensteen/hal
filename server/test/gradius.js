@@ -16,10 +16,21 @@ gradius
   .add(fceuxMacro.wait({ frame: 200 }))
   .add(joypadWrite(1, { start: true }))
   .add(fceuxMacro.wait({ frame: 200 }))
+  .joypad({ 1: { A: true } })
+  .joypad({ 1: { B: true } })
+  .start();
+
+/*
+gradius
+  .add(fceuxMacro.init({ speed: 'normal' }))
+  .add(fceuxMacro.wait({ frame: 200 }))
+  .add(joypadWrite(1, { start: true }))
+  .add(fceuxMacro.wait({ frame: 200 }))
   .add(joypadWrite(1, { A: true }), { period: 1 })
-  // .add(joypadWrite(1, { up: true, left: true, A: true }), { time: 50 })
+  .add(joypadWrite(1, { up: true, left: true, A: true }), { time: 50 })
   .add(emuFrameAdvance(), { period: 1 })
   .start();
+  */
 
 /*
 gradius
